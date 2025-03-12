@@ -3,12 +3,17 @@ package auxdataaisdkgo
 import "time"
 
 const (
+	DEFAULT_URL                = "https://auxdata.ai"
+	DEV_URL                    = "https://dev.auxdata.ai"
+	DEFAULT_MAX_RETRIES        = 5
+	DEFAULT_TIMEOUT            = 120 * time.Second
 	BASE_ROUTE                 = "/api/v1"
 	SEARCH_URL_ROUTE_AGENT     = BASE_ROUTE + "/agent/${agentid}/document"
 	SEARCH_URL_ROUTE_CONTAINER = BASE_ROUTE + "/agent/${agentid}/container/${containerid}/document"
-	DEFAULT_URL                = "https://auxdata.ai"
-	DEFAULT_MAX_RETRIES        = 5
-	DEFAULT_TIMEOUT            = 120 * time.Second
+	UPLOAD_URL_ROUTE           = BASE_ROUTE + "/agent/${agentid}/container/${containerid}/document"
+	CHAT_URL_ROUTE             = BASE_ROUTE + "/agent/${agentid}/chat"
+	CHAT_CONTAINER_URL_ROUTE   = BASE_ROUTE + "/agent/${agentid}/container/${containerid}/chat"
+	AISERVICE_URL_ROUTE        = BASE_ROUTE + "/agent/${agentid}/executeservice/${serviceid}"
 )
 
 type LlmParameter struct {
@@ -178,4 +183,22 @@ type FileData struct {
 	Link        string
 	FileContent []byte
 	DocumentId  string
+}
+
+type File struct {
+	FileType string `json:"name"`
+	Filename string `json:"type"`
+	Content  string `json:"content"` // base64String
+}
+
+type AiServiceValue interface {
+	toString() (string, error)
+}
+
+type AiServiceValueString struct {
+	Value string
+}
+
+type AiServiceValueFile struct {
+	Value File
 }

@@ -24,11 +24,7 @@ func (c *AuxDataClient) SearchOnContainer(agentId int64, containerId int64, sear
 }
 
 func (c *AuxDataClient) search(route string, search Search) ([]SearchChunkResult, error) {
-	var httpClient utilities.SimpleHttpClient
-	httpClient.AddBearerAuthentificationToken(c.apiKey)
-	httpClient.Method = "POST"
-
-	httpClient.Url = c.url + route
+	httpClient := generateHttpClient(c, route, utilities.HTTP_METHOD_POST)
 	body, err := json.Marshal(search)
 
 	if err != nil {

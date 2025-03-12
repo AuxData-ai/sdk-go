@@ -3,6 +3,8 @@ package auxdataaisdkgo
 import (
 	"os"
 	"time"
+
+	"github.com/AuxData-ai/utilities"
 )
 
 type AuxDataClient struct {
@@ -27,4 +29,14 @@ func NewAuxDataClient(apiKey string, url string, maxRetries int, timeout time.Du
 		maxRetries: maxRetries,
 		timeout:    timeout,
 	}
+}
+
+func generateHttpClient(c *AuxDataClient, url string, method utilities.HTTP_METHOD) utilities.SimpleHttpClient {
+	var httpClient utilities.SimpleHttpClient
+	httpClient.AddBearerAuthentificationToken(c.apiKey)
+	httpClient.Method = method
+	httpClient.ContentType = "application/json"
+
+	httpClient.Url = c.url + url
+	return httpClient
 }
