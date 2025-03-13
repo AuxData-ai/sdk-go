@@ -116,12 +116,8 @@ func TestAiServiceInvalidServiceId(t *testing.T) {
 
 	result, err := c.ExecuteAiService(AGENT_ID_AISERVICE, 677868, parameters)
 
-	if err != nil {
-		t.Error(err)
-	}
-
-	if result.Error != "" {
-		t.Error(result.Error)
+	if err == nil {
+		t.Error("expected error, but returned nil")
 	}
 
 	if len(result.MulitResults.Results) != 0 {

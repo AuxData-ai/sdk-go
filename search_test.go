@@ -74,8 +74,8 @@ func TestSearchOnContainerInvalidApiKey(t *testing.T) {
 
 	results, err := c.SearchOnContainer(AGENT_ID_SEARCH, CONTAINER_ID_SEARCH, search)
 
-	if err != nil {
-		t.Error(err)
+	if err == nil {
+		t.Error("expected error, but returned nil")
 	}
 
 	if results.Error != "" {
@@ -128,8 +128,8 @@ func TestSearchOnContainerWrongAgentId(t *testing.T) {
 
 	results, err := c.SearchOnContainer(899898, CONTAINER_ID_SEARCH, search)
 
-	if err != nil {
-		t.Error(err)
+	if err == nil {
+		t.Error("expected error, but returned nil")
 	}
 
 	if results.Error != "" {

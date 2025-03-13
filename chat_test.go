@@ -70,8 +70,8 @@ func TestChatOnAgentWithInvalidAPIKey(t *testing.T) {
 
 	result, err := c.ChatWithAllContainers(AGENT_ID_CHAT, chat)
 
-	if err != nil {
-		t.Error(err)
+	if err == nil {
+		t.Error("expected error, but returned nil")
 	}
 
 	if result.ComUuid != "" {
@@ -93,8 +93,8 @@ func TestChatOnAgentWithInvalidAgentId(t *testing.T) {
 
 	result, err := c.ChatWithAllContainers(68768, chat)
 
-	if err != nil {
-		t.Error(err)
+	if err == nil {
+		t.Error("expected error, but returned nil")
 	}
 
 	if result.ComUuid != "" {
@@ -116,8 +116,8 @@ func TestChatOnAgentWithInvalidContainerId(t *testing.T) {
 
 	result, err := c.ChatWithOneContainers(AGENT_ID_CHAT, 7876, chat)
 
-	if err != nil {
-		t.Error(err)
+	if err == nil {
+		t.Error("expected error, but returned nil")
 	}
 
 	if result.ComUuid != "" {
