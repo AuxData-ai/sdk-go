@@ -5,6 +5,7 @@ import "time"
 const (
 	DEFAULT_URL                = "https://auxdata.ai"
 	DEV_URL                    = "https://dev.auxdata.ai"
+	DEBUG_URL                  = "http://localhost:8080"
 	DEFAULT_MAX_RETRIES        = 5
 	DEFAULT_TIMEOUT            = 120 * time.Second
 	BASE_ROUTE                 = "/api/v1"
@@ -16,9 +17,11 @@ const (
 	AISERVICE_URL_ROUTE        = BASE_ROUTE + "/agent/${agentid}/executeservice/${serviceid}"
 )
 
-type LlmParameter struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
+type AuxDataClient struct {
+	apiKey     string
+	url        string
+	maxRetries int
+	timeout    time.Duration
 }
 
 type AiServiceResult struct {
@@ -40,10 +43,10 @@ type ExecuteServiceResult struct {
 }
 
 type ExecuteServiceCommand struct {
-	AgentId        int64          `json:"botid"`
-	ServiceId      int64          `json:"templateid"`
-	Parameters     []LlmParameter `json:"parameters,omitempty"`
-	BackgroundMode bool           `json:"backgroundmodepossible"`
+	AgentId        int64             `json:"botid"`
+	ServiceId      int64             `json:"templateid"`
+	Parameters     map[string]string `json:"parameters,omitempty"`
+	BackgroundMode bool              `json:"backgroundmodepossible"`
 }
 
 type UserConfig struct {
@@ -155,8 +158,9 @@ type ChatResult struct {
 }
 
 type Chat struct {
-	Prompt  string `json:"question"`
-	ComUuid string `json:"comuuid"`
+	Prompt   string `json:"question"`
+	ComUuid  string `json:"comuuid"`
+	UserMail string `json:"usermail"`
 }
 
 type SearchChunkResult struct {
@@ -213,4 +217,19 @@ type UploadedFilesResult struct {
 	Filename   string `json:"filename"`
 	Filetype   string `json:"filetype"`
 	DocumentId string `json:"documentid"`
+}
+
+type DetailSearchCommand struct {
+	Question    string  `json:"question"`
+	Token       string  `json:"accesstoken"`
+	AgentId     int64   `json:"botid"`
+	QualityGate float32 `json:"qualitygate"`
+	ResultLimit int64   `json:"resultLimit"`
+	ContainerId int64   `json:"containerid"`
+}
+
+type DetailSearchResult struct {
+	Command DetailSearchCommand `json:"command"`
+	Results []SearchChunkResult `json:"results"`
+	Error   string              `json:"error"`
 }

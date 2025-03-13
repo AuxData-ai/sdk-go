@@ -7,6 +7,16 @@ import (
 	"github.com/AuxData-ai/utilities"
 )
 
+// ExecuteAiService executes an AI service for a given agent and service ID with specified parameters.
+//
+// Parameters:
+//   - agentId: The ID of the agent for which the AI service is to be executed.
+//   - serviceId: The ID of the AI service to be executed.
+//   - parameters: A map of parameters to be passed to the AI service.
+//
+// Returns:
+//   - ExecuteServiceResult: The result of the AI service execution.
+//   - error: An error object if there was an issue executing the service, otherwise nil.
 func (c *AuxDataClient) ExecuteAiService(agentId int64, serviceId int64, parameters map[string]AiServiceValue) (ExecuteServiceResult, error) {
 	routeparameters := make(map[string]string)
 	routeparameters["agentid"] = strconv.FormatInt(agentId, 10)

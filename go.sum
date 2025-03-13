@@ -4,6 +4,8 @@ github.com/AuxData-ai/utilities v0.0.0-20250312092647-d2d092996857 h1:sBuFnvCtlg
 github.com/AuxData-ai/utilities v0.0.0-20250312092647-d2d092996857/go.mod h1:OmxpYq2O8BoCbe3nvZxnR6Kj8i42OJBrbONRpdkKNnI=
 github.com/AuxData-ai/utilities v0.0.0-20250312095548-79a0fd799c7f h1:/QuWAGbYshvKJrLKBwb0dW6Z6H4KUB9WbmzE+hkzlyw=
 github.com/AuxData-ai/utilities v0.0.0-20250312095548-79a0fd799c7f/go.mod h1:OmxpYq2O8BoCbe3nvZxnR6Kj8i42OJBrbONRpdkKNnI=
+github.com/AuxData-ai/utilities v0.0.0-20250313122340-1b135be55e88 h1:23pnOGD8121HBavSempYp33nkBKM73f5VbQqTGh906w=
+github.com/AuxData-ai/utilities v0.0.0-20250313122340-1b135be55e88/go.mod h1:OmxpYq2O8BoCbe3nvZxnR6Kj8i42OJBrbONRpdkKNnI=
 github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d h1:hrujxIzL1woJ7AwssoOcM/tq5JjjG2yYOc8odClEiXA=
 github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d/go.mod h1:uugorj2VCxiV1x+LzaIdVa9b4S4qGAcH6cbhh4qVxOU=
 golang.org/x/net v0.37.0 h1:1zLorHbz+LYj7MQlSf1+2tPIIgibq2eL5xkrGk6f+2c=

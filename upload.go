@@ -10,12 +10,23 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/AuxData-ai/utilities"
 )
 
-func (c *AuxDataClient) UploadFile(agentId int64, containerId int64, file FileData) (UploadedFilesResult, error) {
+// UploadFile uploads a file to a specified container for a given agent.
+//
+// Parameters:
+//   - agentId: The ID of the agent to which the file belongs.
+//   - containerId: The ID of the container where the file will be uploaded.
+//   - file: The file data to be uploaded.
+//
+// Returns:
+//   - UploadedFilesResult: The result of the file upload operation.
+//   - error: An error object if the upload fails, otherwise nil.
+func (c *AuxDataClient) UploadFile(agentId int64, containerId int64, file FileData) ([]UploadedFilesResult, error) {
 
 	parameters := make(map[string]string)
 	parameters["agentid"] = strconv.FormatInt(agentId, 10)
@@ -25,19 +36,36 @@ func (c *AuxDataClient) UploadFile(agentId int64, containerId int64, file FileDa
 	return c.upload(route, file)
 }
 
-func (c *AuxDataClient) UploadFileFromDirectory(agentId int64, containerId int64, file FileDataToLoad) (UploadedFilesResult, error) {
+// UploadFileFromDirectory uploads a file from a specified directory to a container.
+// It takes the agent ID, container ID, and file data to load as parameters.
+// The function reads the file content from the provided file path and uploads it using the UploadFile method.
+// It returns the result of the upload and an error if any occurs during the process.
+//
+// Parameters:
+//   - agentId: The ID of the agent performing the upload.
+//   - containerId: The ID of the container to which the file is being uploaded.
+//   - file: The file data to load, including the document ID, file path, and link.
+//
+// Returns:
+//   - UploadedFilesResult: The result of the file upload.
+//   - error: An error if any occurs during the file reading or uploading process.
+func (c *AuxDataClient) UploadFileFromDirectory(agentId int64, containerId int64, file FileDataToLoad) ([]UploadedFilesResult, error) {
 
-	var result UploadedFilesResult
 	var fileData FileData
 	fileData.DocumentId = file.DocumentId
 	fileData.FileType = filepath.Ext(file.FilePath)
+
+	if index := strings.Index(fileData.FileType, "."); index != -1 {
+		fileData.FileType = fileData.FileType[0:index] + fileData.FileType[index+1:]
+	}
+
 	fileData.Filename = filepath.Base(file.FilePath)
 	fileData.Link = file.Link
 
 	data, err := os.ReadFile(file.FilePath)
 
 	if err != nil {
-		return result, err
+		return nil, err
 	}
 
 	fileData.FileContent = data
@@ -45,18 +73,17 @@ func (c *AuxDataClient) UploadFileFromDirectory(agentId int64, containerId int64
 	return c.UploadFile(agentId, containerId, fileData)
 }
 
-func (c *AuxDataClient) upload(route string, fileData FileData) (UploadedFilesResult, error) {
+func (c *AuxDataClient) upload(route string, fileData FileData) ([]UploadedFilesResult, error) {
 
-	var result UploadedFilesResult
 	file := bytes.NewBuffer(fileData.FileContent)
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
 	// Add the file to the form
-	part, err := writer.CreateFormFile("file", fileData.Filename)
+	part, err := writer.CreateFormFile("files", fileData.Filename)
 	if err != nil {
-		return result, err
+		return nil, err
 	}
 	io.Copy(part, file)
 
@@ -64,10 +91,10 @@ func (c *AuxDataClient) upload(route string, fileData FileData) (UploadedFilesRe
 	err = writer.Close()
 	if err != nil {
 		fmt.Println("Error closing multipart form:", err)
-		return result, err
+		return nil, err
 	}
 
-	httpClient := generateHttpClient(c, route, utilities.HTTP_METHOD_POST)
+	httpClient := generateHttpClient(c, route, utilities.HTTP_METHOD_PUT)
 	httpClient.AddHeader("link", fileData.Link)
 
 	if fileData.DocumentId != "" {
@@ -79,9 +106,9 @@ func (c *AuxDataClient) upload(route string, fileData FileData) (UploadedFilesRe
 	return c.executeOwnHttpRequest(httpClient, body)
 }
 
-func (c *AuxDataClient) executeOwnHttpRequest(myHttpClient utilities.SimpleHttpClient, body *bytes.Buffer) (UploadedFilesResult, error) {
+func (c *AuxDataClient) executeOwnHttpRequest(myHttpClient utilities.SimpleHttpClient, body *bytes.Buffer) ([]UploadedFilesResult, error) {
 
-	var result UploadedFilesResult
+	var result []UploadedFilesResult
 	// Create a new HTTP Client
 	httpClient := &http.Client{}
 
@@ -97,12 +124,7 @@ func (c *AuxDataClient) executeOwnHttpRequest(myHttpClient utilities.SimpleHttpC
 		req.Header.Set(key, value)
 	}
 
-	if myHttpClient.ContentType == "" {
-		req.Header.Set("Content-Type", "application/json")
-	} else {
-		req.Header.Set("Content-Type", myHttpClient.ContentType)
-	}
-
+	req.Header.Set("Content-Type", myHttpClient.ContentType)
 	httpClient.Timeout = time.Duration(time.Duration.Minutes(2))
 
 	resp, err := httpClient.Do(req)
@@ -111,6 +133,10 @@ func (c *AuxDataClient) executeOwnHttpRequest(myHttpClient utilities.SimpleHttpC
 	}
 
 	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		return result, fmt.Errorf("error: %s", resp.Status)
+	}
 
 	resultBody, err := io.ReadAll(resp.Body)
 	if err != nil {
