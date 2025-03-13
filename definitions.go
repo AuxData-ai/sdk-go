@@ -182,7 +182,13 @@ type FileData struct {
 	Filename    string
 	Link        string
 	FileContent []byte
-	DocumentId  string
+	DocumentId  string // for new documents always "" if you want to update a document set the documentid
+}
+
+type FileDataToLoad struct {
+	FilePath   string
+	Link       string
+	DocumentId string // for new documents always "" if you want to update a document set the documentid
 }
 
 type File struct {
@@ -201,4 +207,10 @@ type AiServiceValueString struct {
 
 type AiServiceValueFile struct {
 	Value File
+}
+
+type UploadedFilesResult struct {
+	Filename   string `json:"filename"`
+	Filetype   string `json:"filetype"`
+	DocumentId string `json:"documentid"`
 }
